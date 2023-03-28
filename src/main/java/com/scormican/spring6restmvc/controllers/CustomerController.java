@@ -1,12 +1,13 @@
 package com.scormican.spring6restmvc.controllers;
 
 import com.scormican.spring6restmvc.model.Beer;
-import com.scormican.spring6restmvc.services.BeerService;
+import com.scormican.spring6restmvc.model.Customer;
+import com.scormican.spring6restmvc.services.CustomerService;
+import jakarta.websocket.server.PathParam;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,37 +19,34 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/v1/beer")
-public class BeerController {
-    private final BeerService beerService;
+@RequestMapping("/api/v1/customers")
+public class CustomerController {
+    private CustomerService customerService;
 
-    @PutMapping("{beerId}")
-    public ResponseEntity updateById(@PathVariable UUID beerId, @RequestBody Beer beer){
-        beerService.updateBeerById(beerId, beer);
+    @PutMapping("{customerId}")
+    public ResponseEntity updateById(@PathVariable UUID customerId, @RequestBody Customer cust){
+        customerService.updateCustomerById(customerId, cust);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/beer/" + beerId);
+        headers.add("Location", "/api/v1/customers/" + customerId);
         return new ResponseEntity(headers, HttpStatus.NO_CONTENT);
     }
-
-//    @RequestMapping(method = RequestMethod.POST)
     @PostMapping
-    public ResponseEntity handlePost(@RequestBody Beer beer) {
-        Beer savedBeer = beerService.saveNewBeer(beer);
+    public ResponseEntity handlePost(@RequestBody Customer newCust){
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/beer/" + savedBeer.getId().toString());
+        Customer savedCustomer = customerService.addCustomer(newCust);
+
+        headers.add("Location", "/api/v1/customers" + savedCustomer.getId().toString());
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
     @RequestMapping(method = RequestMethod.GET)
-    public List<Beer> listBeers() {
-        log.info("just checking the log");
-        return beerService.listBeers();
+    public List<Customer> getCustomerList() {
+        return customerService.listCustomers();
     }
-    @RequestMapping(value ="{beerId}", method = RequestMethod.GET)
 
-    public Beer getBeerById(@PathVariable UUID beerId){
-        return beerService.getBeerById(beerId);
+    @RequestMapping(value = "{custId}", method = RequestMethod.GET )
+    public Customer getCustomerById(@PathVariable UUID custId){
+        return customerService.getCustomerById(custId);
     }
 }

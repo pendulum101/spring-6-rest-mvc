@@ -4,7 +4,9 @@ import com.scormican.spring6restmvc.model.Beer;
 import com.scormican.spring6restmvc.model.BeerStyle;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -45,20 +47,45 @@ public class BeerServiceImpl implements BeerService {
         beerMap.put(one.getId(), one);
         beerMap.put(two.getId(), two);
     }
+
+    @Override
+    public List<Beer> listBeers(){
+        return new ArrayList<>(beerMap.values());
+    }
     @Override
     public Beer getBeerById(UUID id){
+        log.debug("retrieving beer with id: " + id.toString());
+        return beerMap.get(id);
+    }
 
-        log.debug("logging in the beerserviceimpl");
-        return Beer.builder()
-            .id(id)
-            .version(1)
-            .beerName("roboto")
-            .beerStyle(BeerStyle.PALE_ALE)
-            .upc("12345")
-            .price(new BigDecimal("5"))
-            .quantityOnHand(50)
+    @Override
+    public Beer saveNewBeer(Beer beer) {
+        Beer savedBeer = Beer.builder()
+            .id(UUID.randomUUID())
             .createdDate(LocalDateTime.now())
             .modifiedDate(LocalDateTime.now())
+            .beerName(beer.getBeerName())
+            .beerStyle(beer.getBeerStyle())
+            .quantityOnHand(beer.getQuantityOnHand())
+            .upc(beer.getUpc())
+            .price(beer.getPrice())
             .build();
+
+        beerMap.put(savedBeer.getId(), savedBeer);
+
+        return savedBeer;
+    }
+
+    @Override
+    public void updateBeerById(UUID beerId, Beer beer) {
+        Beer updatedBeer = beerMap.get(beerId);
+        updatedBeer.setBeerName(beer.getBeerName());
+        updatedBeer.setPrice(beer.getPrice());
+        updatedBeer.setVersion(beer.getVersion());
+        updatedBeer.setBeerStyle(beer.getBeerStyle());
+        updatedBeer.setQuantityOnHand(beer.getQuantityOnHand());
+        updatedBeer.setModifiedDate(LocalDateTime.now());
+
+        beerMap.put(beerId, updatedBeer);
     }
 }
