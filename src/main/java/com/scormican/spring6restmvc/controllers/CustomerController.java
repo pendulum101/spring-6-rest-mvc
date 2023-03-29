@@ -1,16 +1,14 @@
 package com.scormican.spring6restmvc.controllers;
 
-import com.scormican.spring6restmvc.model.Beer;
 import com.scormican.spring6restmvc.model.Customer;
 import com.scormican.spring6restmvc.services.CustomerService;
-import jakarta.websocket.server.PathParam;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,6 +30,13 @@ public class CustomerController {
         headers.add("Location", "/api/v1/customers/" + customerId);
         return new ResponseEntity(headers, HttpStatus.NO_CONTENT);
     }
+
+    @DeleteMapping("{customerId}")
+    public ResponseEntity delById(@PathVariable UUID customerId) {
+        customerService.delCustById(customerId);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
     @PostMapping
     public ResponseEntity handlePost(@RequestBody Customer newCust){
         HttpHeaders headers = new HttpHeaders();
