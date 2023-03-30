@@ -15,8 +15,6 @@ import com.scormican.spring6restmvc.model.Customer;
 import com.scormican.spring6restmvc.services.CustomerService;
 import com.scormican.spring6restmvc.services.CustomerServiceImpl;
 import java.util.UUID;
-import javax.print.attribute.standard.Media;
-import jdk.jfr.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(CustomerController.class)
 class CustomerControllerTest {
+
     @Autowired
     MockMvc mockMvc;
     @MockBean
@@ -43,13 +42,13 @@ class CustomerControllerTest {
     }
 
     @Test
-    void testUpdateCustomer() throws Exception{
+    void testUpdateCustomer() throws Exception {
         Customer customer = customerServiceImpl.listCustomers().get(0);
 
         mockMvc.perform(put("/api/v1/customers/" + customer.getId().toString())
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(customer)))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(customer)))
             .andExpect(status().isNoContent());
 
         verify(customerService).updateCustomerById(any(UUID.class), any(Customer.class));
@@ -63,9 +62,9 @@ class CustomerControllerTest {
 
         given(customerService.addCustomer(any(Customer.class))).willReturn(customerServiceImpl.listCustomers().get(0));
         mockMvc.perform(post("/api/v1/customers")
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(customer)))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(customer)))
             .andExpect(status().isCreated());
     }
 
