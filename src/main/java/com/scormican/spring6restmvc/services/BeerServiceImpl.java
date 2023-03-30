@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -54,9 +55,9 @@ public class BeerServiceImpl implements BeerService {
         return new ArrayList<>(beerMap.values());
     }
     @Override
-    public Beer getBeerById(UUID id){
+    public Optional<Beer> getBeerById(UUID id){
         log.debug("retrieving beer with id: " + id.toString());
-        return beerMap.get(id);
+        return Optional.of(beerMap.get(id));
     }
 
     @Override
