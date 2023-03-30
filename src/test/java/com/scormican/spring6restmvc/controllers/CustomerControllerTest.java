@@ -1,9 +1,11 @@
 package com.scormican.spring6restmvc.controllers;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -17,6 +19,7 @@ import com.scormican.spring6restmvc.services.CustomerServiceImpl;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -39,6 +42,19 @@ class CustomerControllerTest {
     @BeforeEach
     void setUp() {
         customerServiceImpl = new CustomerServiceImpl();
+    }
+
+    @Test
+    void testDeleteCustomer() throws Exception {
+        Customer customer = customerServiceImpl.listCustomers().get(0);
+
+        mockMvc.perform(delete("/api/v1/customers/" + customer.getId())
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNoContent());
+        ArgumentCaptor<UUID> argumentCaptor = ArgumentCaptor.forClass(UUID.class);
+        verify(customerService).delCustById(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue().equals(customer.getId()));
+
     }
 
     @Test
