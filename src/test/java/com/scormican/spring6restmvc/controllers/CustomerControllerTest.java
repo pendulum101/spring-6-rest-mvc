@@ -7,19 +7,25 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.scormican.spring6restmvc.model.Beer;
 import com.scormican.spring6restmvc.model.Customer;
 import com.scormican.spring6restmvc.services.CustomerService;
 import com.scormican.spring6restmvc.services.CustomerServiceImpl;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,9 +39,12 @@ class CustomerControllerTest {
     MockMvc mockMvc;
     @MockBean
     CustomerService customerService;
-
     @Autowired
     ObjectMapper objectMapper;
+    @Captor
+    ArgumentCaptor<UUID> uuidArgumentCaptor;
+    @Captor
+    ArgumentCaptor<Customer> customerArgumentCaptor;
 
     CustomerServiceImpl customerServiceImpl;
 
@@ -45,15 +54,27 @@ class CustomerControllerTest {
     }
 
     @Test
+    void testPatchCustomer() throws Exception {
+        Customer customer = customerServiceImpl.listCustomers().get(0);
+        Map<String, Object> patch = new HashMap<>();
+        patch.put("customerName", "Paltrow");
+
+        mockMvc.perform(patch(CustomerController.CUSTOMER_PATH_ID, customer.getId()).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(patch)))
+            .andExpect(status().isNoContent());
+        verify(customerService).updateCustomerById(uuidArgumentCaptor.capture(), customerArgumentCaptor.capture());
+        assertThat(uuidArgumentCaptor.getValue().equals(customer.getId()));
+        assertThat(customerArgumentCaptor.getValue().getCustomerName().equals(patch.get("customerName").toString()));
+    }
+
+    @Test
     void testDeleteCustomer() throws Exception {
         Customer customer = customerServiceImpl.listCustomers().get(0);
 
-        mockMvc.perform(delete("/api/v1/customers/" + customer.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete(CustomerController.CUSTOMER_PATH_ID, customer.getId())
+                .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
-        ArgumentCaptor<UUID> argumentCaptor = ArgumentCaptor.forClass(UUID.class);
-        verify(customerService).delCustById(argumentCaptor.capture());
-        assertThat(argumentCaptor.getValue().equals(customer.getId()));
+        verify(customerService).delCustById(uuidArgumentCaptor.capture());
+        assertThat(uuidArgumentCaptor.getValue().equals(customer.getId()));
 
     }
 
@@ -61,7 +82,7 @@ class CustomerControllerTest {
     void testUpdateCustomer() throws Exception {
         Customer customer = customerServiceImpl.listCustomers().get(0);
 
-        mockMvc.perform(put("/api/v1/customers/" + customer.getId().toString())
+        mockMvc.perform(put(CustomerController.CUSTOMER_PATH_ID, customer.getId().toString())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(customer)))
@@ -76,8 +97,8 @@ class CustomerControllerTest {
         customer.setId(null);
         customer.setVersion(null);
 
-        given(customerService.addCustomer(any(Customer.class))).willReturn(customerServiceImpl.listCustomers().get(0));
-        mockMvc.perform(post("/api/v1/customers")
+        given(customerService.addCustomer(any(Customer.class))).willReturn(customerServiceImpl.listCustomers().get(1));
+        mockMvc.perform(post(CustomerController.CUSTOMER_PATH)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(customer)))
@@ -89,7 +110,7 @@ class CustomerControllerTest {
 
         given(customerService.listCustomers()).willReturn(customerServiceImpl.listCustomers());
 
-        mockMvc.perform(get("/api/v1/customers").accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(CustomerController.CUSTOMER_PATH).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()", is(2)));
     }
@@ -99,7 +120,7 @@ class CustomerControllerTest {
         Customer testCustomer = customerServiceImpl.listCustomers().get(0);
 
         given(customerService.getCustomerById(testCustomer.getId())).willReturn(testCustomer);
-        mockMvc.perform(get("/api/v1/customers/" + testCustomer.getId().toString()).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(CustomerController.CUSTOMER_PATH_ID, testCustomer.getId().toString()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.customerName", is(testCustomer.getCustomerName())));
 

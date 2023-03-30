@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,39 +20,49 @@ import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/v1/customers")
+@RequestMapping
 public class CustomerController {
+
+    public static final String CUSTOMER_PATH = "/api/v1/customers";
+    public static final String CUSTOMER_PATH_ID = CUSTOMER_PATH + "/{customerId}";
     private CustomerService customerService;
 
-    @PutMapping("{customerId}")
-    public ResponseEntity updateById(@PathVariable UUID customerId, @RequestBody Customer cust){
+    @PatchMapping(CUSTOMER_PATH_ID)
+    public ResponseEntity updateBeerPatchById(@PathVariable UUID customerId, @RequestBody Customer customer) {
+        customerService.updateCustomerById(customerId, customer);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping(CUSTOMER_PATH_ID)
+    public ResponseEntity updateById(@PathVariable UUID customerId, @RequestBody Customer cust) {
         customerService.updateCustomerById(customerId, cust);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/customers/" + customerId);
         return new ResponseEntity(headers, HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("{customerId}")
+    @DeleteMapping(CUSTOMER_PATH_ID)
     public ResponseEntity delById(@PathVariable UUID customerId) {
         customerService.delCustById(customerId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping
-    public ResponseEntity handlePost(@RequestBody Customer newCust){
+    @PostMapping(CUSTOMER_PATH)
+    public ResponseEntity handlePost(@RequestBody Customer newCust) {
         HttpHeaders headers = new HttpHeaders();
         Customer savedCustomer = customerService.addCustomer(newCust);
 
         headers.add("Location", "/api/v1/customers" + savedCustomer.getId().toString());
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
-    @RequestMapping(method = RequestMethod.GET)
+
+    @RequestMapping(value = CUSTOMER_PATH, method = RequestMethod.GET)
     public List<Customer> getCustomerList() {
         return customerService.listCustomers();
     }
 
-    @RequestMapping(value = "{custId}", method = RequestMethod.GET )
-    public Customer getCustomerById(@PathVariable UUID custId){
-        return customerService.getCustomerById(custId);
+    @RequestMapping(value = CUSTOMER_PATH_ID, method = RequestMethod.GET)
+    public Customer getCustomerById(@PathVariable UUID customerId) {
+        return customerService.getCustomerById(customerId);
     }
 }
