@@ -16,7 +16,7 @@
   <description>spring-6-rest-mvc</description>
   <properties>
     <java.version>17</java.version>
-    <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
+    <org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
   </properties>
   <dependencies>
     <dependency>
@@ -85,7 +85,7 @@
             <annotationProcessorPaths>
               <path>
                 <groupId>org.mapstruct</groupId>
-                <artifactId>mapstruct</artifactId>
+                <artifactId>mapstruct-processor</artifactId>
                 <version>${org.mapstruct.version}</version>
               </path>
               <path>
