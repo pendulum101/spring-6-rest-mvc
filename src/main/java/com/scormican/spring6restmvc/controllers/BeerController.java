@@ -1,6 +1,6 @@
 package com.scormican.spring6restmvc.controllers;
 
-import com.scormican.spring6restmvc.model.Beer;
+import com.scormican.spring6restmvc.model.BeerDTO;
 import com.scormican.spring6restmvc.services.BeerService;
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +30,7 @@ public class BeerController {
     private final BeerService beerService;
 
     @PatchMapping(BEER_PATH_ID)
-    public ResponseEntity updateBeerPatchById(@PathVariable UUID beerId, @RequestBody Beer beer) {
+    public ResponseEntity updateBeerPatchById(@PathVariable UUID beerId, @RequestBody BeerDTO beer) {
         beerService.updateBeerPatchById(beerId, beer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
@@ -43,7 +43,7 @@ public class BeerController {
     }
 
     @PutMapping(BEER_PATH_ID)
-    public ResponseEntity updateById(@PathVariable UUID beerId, @RequestBody Beer beer) {
+    public ResponseEntity updateById(@PathVariable UUID beerId, @RequestBody BeerDTO beer) {
         beerService.updateBeerById(beerId, beer);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/beer/" + beerId);
@@ -52,22 +52,22 @@ public class BeerController {
 
     //    @RequestMapping(method = RequestMethod.POST)
     @PostMapping(BEER_PATH)
-    public ResponseEntity handlePost(@RequestBody Beer beer) {
-        Beer savedBeer = beerService.saveNewBeer(beer);
+    public ResponseEntity handlePost(@RequestBody BeerDTO beer) {
+        BeerDTO savedBeer = beerService.saveNewBeer(beer);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/beer/" + savedBeer.getId().toString());
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = BEER_PATH, method = RequestMethod.GET)
-    public List<Beer> listBeers() {
+    public List<BeerDTO> listBeers() {
         log.info("just checking the log");
         return beerService.listBeers();
     }
 
     @RequestMapping(value = BEER_PATH_ID, method = RequestMethod.GET)
 
-    public Beer getBeerById(@PathVariable UUID beerId) {
+    public BeerDTO getBeerById(@PathVariable UUID beerId) {
         return beerService.getBeerById(beerId).orElseThrow(NotFoundException::new);
     }
 }

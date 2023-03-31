@@ -1,6 +1,6 @@
 package com.scormican.spring6restmvc.controllers;
 
-import com.scormican.spring6restmvc.model.Customer;
+import com.scormican.spring6restmvc.model.CustomerDTO;
 import com.scormican.spring6restmvc.services.CustomerService;
 import java.util.List;
 import java.util.UUID;
@@ -28,13 +28,13 @@ public class CustomerController {
     private CustomerService customerService;
 
     @PatchMapping(CUSTOMER_PATH_ID)
-    public ResponseEntity updateBeerPatchById(@PathVariable UUID customerId, @RequestBody Customer customer) {
+    public ResponseEntity updateBeerPatchById(@PathVariable UUID customerId, @RequestBody CustomerDTO customer) {
         customerService.updateCustomerById(customerId, customer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping(CUSTOMER_PATH_ID)
-    public ResponseEntity updateById(@PathVariable UUID customerId, @RequestBody Customer cust) {
+    public ResponseEntity updateById(@PathVariable UUID customerId, @RequestBody CustomerDTO cust) {
         customerService.updateCustomerById(customerId, cust);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/customers/" + customerId);
@@ -48,21 +48,21 @@ public class CustomerController {
     }
 
     @PostMapping(CUSTOMER_PATH)
-    public ResponseEntity handlePost(@RequestBody Customer newCust) {
+    public ResponseEntity handlePost(@RequestBody CustomerDTO newCust) {
         HttpHeaders headers = new HttpHeaders();
-        Customer savedCustomer = customerService.addCustomer(newCust);
+        CustomerDTO savedCustomer = customerService.addCustomer(newCust);
 
         headers.add("Location", "/api/v1/customers" + savedCustomer.getId().toString());
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = CUSTOMER_PATH, method = RequestMethod.GET)
-    public List<Customer> getCustomerList() {
+    public List<CustomerDTO> getCustomerList() {
         return customerService.listCustomers();
     }
 
     @RequestMapping(value = CUSTOMER_PATH_ID, method = RequestMethod.GET)
-    public Customer getCustomerById(@PathVariable UUID customerId) {
+    public CustomerDTO getCustomerById(@PathVariable UUID customerId) {
         return customerService.getCustomerById(customerId);
     }
 }

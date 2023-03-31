@@ -1,21 +1,19 @@
 package com.scormican.spring6restmvc.services;
 
-import com.scormican.spring6restmvc.model.Beer;
-import com.scormican.spring6restmvc.model.Customer;
+import com.scormican.spring6restmvc.model.CustomerDTO;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public interface CustomerService {
 
 
-    List<Customer> listCustomers();
+    List<CustomerDTO> listCustomers();
 
-    public Customer getCustomerById(UUID id);
+    public CustomerDTO getCustomerById(UUID id);
 
-    public Customer addCustomer(Customer newCust);
+    public CustomerDTO addCustomer(CustomerDTO newCust);
 
-    void updateCustomerById(UUID customerId, Customer cust);
+    void updateCustomerById(UUID customerId, CustomerDTO cust);
 
     void delCustById(UUID customerId);
 }

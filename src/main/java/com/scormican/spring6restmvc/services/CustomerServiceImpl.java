@@ -1,6 +1,6 @@
 package com.scormican.spring6restmvc.services;
 
-import com.scormican.spring6restmvc.model.Customer;
+import com.scormican.spring6restmvc.model.CustomerDTO;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,22 +11,22 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
-    private final Map<UUID, Customer> customerMap;
+    private final Map<UUID, CustomerDTO> customerMap;
 
     public CustomerServiceImpl() {
         this.customerMap = new HashMap<>();
-        Customer first = Customer.builder()
+        CustomerDTO first = CustomerDTO.builder()
             .id(UUID.randomUUID())
             .customerName("Barry Scott")
-            .version("1")
+            .version(1)
             .createdDate(LocalDateTime.now())
             .modifiedDate(LocalDateTime.now())
             .build();
 
-        Customer second = Customer.builder()
+        CustomerDTO second = CustomerDTO.builder()
             .id(UUID.randomUUID())
             .customerName("Jared")
-            .version("2")
+            .version(2)
             .createdDate(LocalDateTime.now())
             .modifiedDate(LocalDateTime.now())
             .build();
@@ -35,21 +35,21 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<Customer> listCustomers() {
+    public List<CustomerDTO> listCustomers() {
         return new ArrayList<>(customerMap.values());
     }
 
     @Override
-    public Customer getCustomerById(UUID id) {
+    public CustomerDTO getCustomerById(UUID id) {
         return customerMap.get(id);
     }
 
     @Override
-    public Customer addCustomer(Customer newCust) {
-        Customer savedCust = Customer.builder()
+    public CustomerDTO addCustomer(CustomerDTO newCust) {
+        CustomerDTO savedCust = CustomerDTO.builder()
             .id(UUID.randomUUID())
             .customerName(newCust.getCustomerName())
-            .version("10")
+            .version(10)
             .createdDate(LocalDateTime.now())
             .modifiedDate(LocalDateTime.now())
             .build();
@@ -59,8 +59,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void updateCustomerById(UUID customerId, Customer cust) {
-        Customer existingCustomer = customerMap.get(customerId);
+    public void updateCustomerById(UUID customerId, CustomerDTO cust) {
+        CustomerDTO existingCustomer = customerMap.get(customerId);
         existingCustomer.setCustomerName(cust.getCustomerName());
         existingCustomer.setVersion(cust.getVersion());
         existingCustomer.setModifiedDate(LocalDateTime.now());
