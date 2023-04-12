@@ -37,17 +37,21 @@ public class BeerController {
 
     @DeleteMapping(BEER_PATH_ID)
     public ResponseEntity delById(@PathVariable UUID beerId) {
-        beerService.delById(beerId);
+        if (!beerService.delById(beerId)) {
+            throw new NotFoundException();
+        }
         HttpHeaders headers = new HttpHeaders();
+
         return new ResponseEntity(headers, HttpStatus.NO_CONTENT);
     }
 
     @PutMapping(BEER_PATH_ID)
     public ResponseEntity updateById(@PathVariable UUID beerId, @RequestBody BeerDTO beer) {
-        beerService.updateBeerById(beerId, beer);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/beer/" + beerId);
-        return new ResponseEntity(headers, HttpStatus.NO_CONTENT);
+        if (beerService.updateBeerById(beerId, beer).isEmpty()) {
+            throw new NotFoundException();
+        }
+
+        return new ResponseEntity(/*headers,*/ HttpStatus.NO_CONTENT);
     }
 
     //    @RequestMapping(method = RequestMethod.POST)
