@@ -2,15 +2,12 @@ package com.scormican.spring6restmvc.bootstrap;
 
 import com.scormican.spring6restmvc.entities.Beer;
 import com.scormican.spring6restmvc.entities.Customer;
-import com.scormican.spring6restmvc.model.BeerDTO;
 import com.scormican.spring6restmvc.model.BeerStyle;
-import com.scormican.spring6restmvc.model.CustomerDTO;
 import com.scormican.spring6restmvc.repositories.BeerRepository;
 import com.scormican.spring6restmvc.repositories.CustomerRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
