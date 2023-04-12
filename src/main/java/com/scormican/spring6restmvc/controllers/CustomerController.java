@@ -3,6 +3,7 @@ package com.scormican.spring6restmvc.controllers;
 import com.scormican.spring6restmvc.model.CustomerDTO;
 import com.scormican.spring6restmvc.services.CustomerService;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -62,7 +63,7 @@ public class CustomerController {
     }
 
     @RequestMapping(value = CUSTOMER_PATH_ID, method = RequestMethod.GET)
-    public CustomerDTO getCustomerById(@PathVariable UUID customerId) {
+    public Optional<CustomerDTO> getCustomerById(@PathVariable UUID customerId) {
         return customerService.getCustomerById(customerId);
     }
 }
