@@ -3,7 +3,6 @@ package com.scormican.spring6restmvc.controllers;
 import com.scormican.spring6restmvc.model.CustomerDTO;
 import com.scormican.spring6restmvc.services.CustomerService;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -29,22 +28,24 @@ public class CustomerController {
     private CustomerService customerService;
 
     @PatchMapping(CUSTOMER_PATH_ID)
-    public ResponseEntity updateBeerPatchById(@PathVariable UUID customerId, @RequestBody CustomerDTO customer) {
+    public ResponseEntity updateCustomerPatchById(@PathVariable UUID customerId, @RequestBody CustomerDTO customer) {
         customerService.updateCustomerById(customerId, customer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping(CUSTOMER_PATH_ID)
     public ResponseEntity updateById(@PathVariable UUID customerId, @RequestBody CustomerDTO cust) {
-        customerService.updateCustomerById(customerId, cust);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/customers/" + customerId);
-        return new ResponseEntity(headers, HttpStatus.NO_CONTENT);
+        if (customerService.updateCustomerById(customerId, cust).isEmpty()) {
+            throw new NotFoundException();
+        }
+        return new ResponseEntity(/*headers,*/ HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping(CUSTOMER_PATH_ID)
     public ResponseEntity delById(@PathVariable UUID customerId) {
-        customerService.delCustById(customerId);
+        if (!customerService.delCustById(customerId)) {
+            throw new NotFoundException();
+        }
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
@@ -53,7 +54,7 @@ public class CustomerController {
         HttpHeaders headers = new HttpHeaders();
         CustomerDTO savedCustomer = customerService.addCustomer(newCust);
 
-        headers.add("Location", "/api/v1/customers" + savedCustomer.getId().toString());
+        headers.add("Location", "/api/v1/customers/" + savedCustomer.getId().toString());
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
@@ -63,7 +64,7 @@ public class CustomerController {
     }
 
     @RequestMapping(value = CUSTOMER_PATH_ID, method = RequestMethod.GET)
-    public Optional<CustomerDTO> getCustomerById(@PathVariable UUID customerId) {
-        return customerService.getCustomerById(customerId);
+    public CustomerDTO getCustomerById(@PathVariable UUID customerId) {
+        return customerService.getCustomerById(customerId).orElseThrow(NotFoundException::new);
     }
 }

@@ -7,14 +7,15 @@ import java.util.UUID;
 
 public interface CustomerService {
 
-
     List<CustomerDTO> listCustomers();
 
     Optional<CustomerDTO> getCustomerById(UUID id);
 
     CustomerDTO addCustomer(CustomerDTO newCust);
 
-    void updateCustomerById(UUID customerId, CustomerDTO cust);
+    Optional<CustomerDTO> updateCustomerById(UUID customerId, CustomerDTO cust);
 
-    void delCustById(UUID customerId);
+    Optional<CustomerDTO> patchCustomerById(UUID customerId, CustomerDTO cust);
+
+    Boolean delCustById(UUID customerId);
 }

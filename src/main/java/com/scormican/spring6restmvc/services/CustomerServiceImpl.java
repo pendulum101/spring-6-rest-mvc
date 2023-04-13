@@ -9,9 +9,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
+
     private final Map<UUID, CustomerDTO> customerMap;
 
     public CustomerServiceImpl() {
@@ -60,16 +62,31 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void updateCustomerById(UUID customerId, CustomerDTO cust) {
+    public Optional<CustomerDTO> updateCustomerById(UUID customerId, CustomerDTO cust) {
         CustomerDTO existingCustomer = customerMap.get(customerId);
         existingCustomer.setCustomerName(cust.getCustomerName());
         existingCustomer.setVersion(cust.getVersion());
         existingCustomer.setModifiedDate(LocalDateTime.now());
         customerMap.put(customerId, existingCustomer);
+        return Optional.of(existingCustomer);
     }
 
     @Override
-    public void delCustById(UUID customerId) {
-        customerMap.remove(customerId);
+    public Optional<CustomerDTO> patchCustomerById(UUID customerId, CustomerDTO cust) {
+        CustomerDTO existing = customerMap.get(customerId);
+
+        if (StringUtils.hasText(cust.getCustomerName())) {
+            existing.setCustomerName(cust.getCustomerName());
+        }
+        return null;
+    }
+
+    @Override
+    public Boolean delCustById(UUID customerId) {
+        if (customerMap.containsKey(customerId)) {
+            customerMap.remove(customerId);
+            return true;
+        }
+        return false;
     }
 }
