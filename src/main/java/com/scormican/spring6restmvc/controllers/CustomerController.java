@@ -5,6 +5,7 @@ import com.scormican.spring6restmvc.services.CustomerService;
 import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
-@RequestMapping
 public class CustomerController {
 
     public static final String CUSTOMER_PATH = "/api/v1/customers";

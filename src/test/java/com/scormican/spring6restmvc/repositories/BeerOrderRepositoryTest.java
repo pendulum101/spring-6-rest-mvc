@@ -1,12 +1,13 @@
 package com.scormican.spring6restmvc.repositories;
 
 import com.scormican.spring6restmvc.entities.Beer;
+import com.scormican.spring6restmvc.entities.BeerOrder;
 import com.scormican.spring6restmvc.entities.Customer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 class BeerOrderRepositoryTest {
@@ -26,12 +27,16 @@ class BeerOrderRepositoryTest {
         testBeer = beerRepository.findAll().get(0);
     }
 
+    @Transactional
     @Test
     void testBeerOrders() {
-        System.out.println(beerOrderRepository.count());
-        System.out.println(customerRepository.count());
-        System.out.println(beerRepository.count());
-        System.out.println(testBeer.getBeerName());
-        System.out.println(testCustomer.getCustomerName());
+        BeerOrder beerOrder = BeerOrder.builder()
+            .customerRef("Test Order")
+            .customer(testCustomer)
+            .build();
+
+        BeerOrder savedBeerOrder = beerOrderRepository.save(beerOrder);
+
+        System.out.println(savedBeerOrder.getCustomerRef());
     }
 }
