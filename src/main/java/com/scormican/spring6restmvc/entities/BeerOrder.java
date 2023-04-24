@@ -4,14 +4,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Version;
 import java.sql.Timestamp;
 import java.util.Set;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +25,6 @@ import org.hibernate.type.SqlTypes;
 @Setter
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class BeerOrder {
 
@@ -50,15 +48,34 @@ public class BeerOrder {
     @UpdateTimestamp
     private Timestamp lastModifiedDate;
 
+
+    private String customerRef;
+    @ManyToOne
+    private Customer customer;
+    @OneToMany(mappedBy = "beerOrder")
+    private Set<BeerOrderLine> beerOrderLines;
+
+    @OneToOne
+    private BeerOrderShipment beerOrderShipment;
+
+    public BeerOrder(UUID id, Long version, Timestamp createdDate, Timestamp lastModifiedDate, String customerRef,
+        Customer customer, Set<BeerOrderLine> beerOrderLines, BeerOrderShipment beerOrderShipment) {
+        this.id = id;
+        this.version = version;
+        this.createdDate = createdDate;
+        this.lastModifiedDate = lastModifiedDate;
+        this.customerRef = customerRef;
+        this.setCustomer(customer);
+        this.beerOrderLines = beerOrderLines;
+        this.beerOrderShipment = beerOrderShipment;
+    }
+
     public boolean isNew() {
         return this.id == null;
     }
 
-    private String customerRef;
-
-    @ManyToOne
-    private Customer customer;
-
-    @OneToMany(mappedBy = "beerOrder")
-    private Set<BeerOrderLine> beerOrderLines;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+        customer.getBeerOrders().add(this);
+    }
 }

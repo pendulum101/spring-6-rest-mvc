@@ -4,40 +4,54 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Version;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.sql.Timestamp;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
+/**
+ * Created by jt, Spring Framework Guru.
+ */
 @Getter
 @Setter
-@Builder
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+@Entity
+@Builder
+public class BeerOrderShipment {
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @JdbcTypeCode(SqlTypes.CHAR)
-    @Column(length = 36, columnDefinition = "varchar(36)", updatable= false, nullable = false)
+    @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
     private UUID id;
-    private String customerName;
+
     @Version
-    private Integer version;
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
-    @Builder.Default
-    @OneToMany(mappedBy = "customer")
-    private Set<BeerOrder> beerOrders = new HashSet<>();
+    private Long version;
+
+    @OneToOne
+    private BeerOrder beerOrder;
+
+    private String trackingNumber;
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Timestamp createdDate;
+    @UpdateTimestamp
+    private Timestamp lastModifiedDate;
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
