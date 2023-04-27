@@ -1,5 +1,6 @@
 package com.scormican.spring6restmvc.controller;
 
+import com.scormican.spring6restmvc.configuration.SpringSecurityConfig;
 import com.scormican.spring6restmvc.entities.Customer;
 import com.scormican.spring6restmvc.mappers.CustomerMapper;
 import com.scormican.spring6restmvc.model.CustomerDTO;
@@ -7,6 +8,7 @@ import com.scormican.spring6restmvc.repositories.CustomerRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
@@ -19,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
+@Import(SpringSecurityConfig.class)
 class CustomerControllerIT {
 
     @Autowired
